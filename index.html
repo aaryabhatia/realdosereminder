@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medicine Reminder</title>
+<style>
+  body{
+    margin:0; min-height:100vh; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center;
+    font-family: -apple-system, Inter, sans-serif; background:#EFF2EA; color:#16332E;
+    gap:16px; padding: 20px;
+  }
+  .spinner{
+    width:28px; height:28px; border-radius:50%;
+    border:3px solid rgba(22,51,46,0.15); border-top-color:#2C4F42;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+  a{ color:#2C4F42; font-size:14px; }
+</style>
+</head>
+<body>
+  <div class="spinner"></div>
+  <div id="msg">Setting up your reminder…</div>
+  <a id="fallback" href="#" style="display:none;">Tap here if nothing happens</a>
+
+<script>
+// ---- Everything below is fixed on purpose: 9:00 AM, every day, for 30 days, starting today. ----
+// To change the medicine name, edit the TITLE line below — that's the only line meant to be edited.
+const TITLE = "Time for your medicine";
+const DETAILS = "Automatic reminder — set for 30 days from today.";
+const HOUR = 9;
+const MINUTE = 0;
+const DAYS = 30;
+
+function pad(n){ return String(n).padStart(2, '0'); }
+
+const now = new Date();
+const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), HOUR, MINUTE, 0);
+const end = new Date(start.getTime() + 15 * 60000);
+const fmt = d => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+const dates = fmt(start) + '/' + fmt(end);
+
+const calendarUrl = 'https://www.google.com/calendar/render?action=TEMPLATE'
+  + '&text=' + encodeURIComponent(TITLE)
+  + '&dates=' + dates
+  + '&details=' + encodeURIComponent(DETAILS)
+  + '&recur=RRULE:FREQ=DAILY;COUNT=' + DAYS;
+
+document.getElementById('fallback').href = calendarUrl;
+setTimeout(() => {
+  window.location.replace(calendarUrl);
+}, 300);
+setTimeout(() => {
+  document.getElementById('msg').textContent = "Taking a moment…";
+  document.getElementById('fallback').style.display = 'inline';
+}, 2000);
+</script>
+</body>
+</html>
